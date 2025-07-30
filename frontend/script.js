@@ -45,4 +45,29 @@ function displayJobs(jobs) {
 }
 
 
+function saveEmail() {
+ 
+  const email = document.getElementById("emailInput").value;
 
+  
+  if (email.trim() === "") {
+    document.getElementById("message").textContent = "Please enter an email.";
+    return;
+  }
+
+
+  localStorage.setItem("userEmail", email);
+
+  
+  document.getElementById("message").textContent = `Saved: ${email}`;
+}
+
+
+
+window.onload = function () {
+  const savedEmail = localStorage.getItem("userEmail");
+  if (savedEmail) {
+    document.getElementById("emailInput").value = savedEmail;
+    document.getElementById("message").textContent = `Loaded saved email: ${savedEmail}`;
+  }
+};
