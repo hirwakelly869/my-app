@@ -1,0 +1,118 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+nav {
+  background-color: #253349; 
+  padding: 10px 20px;
+}
+
+
+nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  padding: 8px 12px;
+  transition: background-color 0.3s;
+  border-radius: 5px;
+  text-align: center;
+}
+
+
+nav a:hover {
+  background-color: #374353; 
+}
+
+
+body {
+font-family: 'Inter', sans-serif;
+color: rgb(25, 26, 27);
+background-image: url(https://png.pngtree.com/thumb_back/fh260/back_our/20190620/ourmid/pngtree-careers-business-banner-image_169858.jpg);
+margin: 0;
+padding: 0;
+background-size: cover;       
+background-position: center;  
+background-repeat: no-repeat; 
+height: 100vh;
+padding: 55px;
+}
+a {
+  color: var(--secondary);
+}
+a:hover {
+  color: var(--accent);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+p {
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+  }
+}
+button, .btn {
+  padding: 0.75rem 1.5rem;
+  background-color: rgb(173, 132, 160);
+  color: rgb(14, 7, 9);
+  border: none;
+  border-radius: 5.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #0b5ed7;
+}
+
+.categories .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  text-align: center;
+}
+.categories .grid div {
+  background: #f1f1f1;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+section{
+    padding: 5.5px;
+    margin-bottom: 60px;
+    border-color: #0b5ed7;
+    
+}
+.newsletter {
+  width: 300px;              
+  padding: 40px 10px;     
+  background-color: #e7ecea; 
+  border-radius: 12px;  
+  padding: 55px;
+  
+  }
+input{
+     background: #f1f1f1;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  
+}
+
+
+
+
+
+
+
+
+
