@@ -16,7 +16,7 @@ This application provides a user-friendly interface to search for jobs worldwide
 ## Technologies Used
 - **Frontend**: HTML, CSS, JavaScript
 - **APIs**: Jsearch via RapidAPI
-- **Deployment**:vercel
+- **Deployment**:Netlify
 
 ## API Information
 This application uses  Jsearch via RapidAPI
@@ -27,9 +27,9 @@ This application uses  Jsearch via RapidAPI
 **API Credit**: [Jsearch on RapidAPI](https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch)
 
 ## How i deployed my app
-- Login in vercel using my github account
+- Login in Netlify using my github account
 - Create a project
-- Then follow instructions to deploy
+- Then deploy app
 
 ## Development Challenges and Solutions
 
