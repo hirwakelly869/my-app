@@ -1,42 +1,43 @@
-Smart Job allocator Application
-
-Project Overview
-This application provides a user-friendly interface to search for jobs worldwide, view detailed information about specific jobs. It leverages the jsearchAPI through RapidAPI to deliver real, up-to-date information about job availability.
+## Smart Job allocator Application
 
 
- Demo Video
+## Project Overview
+This application provides a user-friendly interface to search for jobs worldwide, view detailed information about specific jobs. It uses the jsearchAPI through RapidAPI to deliver real, up-to-date information about job availability.
+ 
+## Demo Video
+- [Myapp](https://youtu.be/4E8q_oWzpP4?si=yvmPikxgvecjRu4e)
 
-
- Features
-- 
+## Features
+- Job searching
+- Profile creation
+- User reviews
+- Employers section
 
 ## Technologies Used
 - **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Node.js, Express
-- **APIs**: Booking.com API via RapidAPI
-- **Deployment**: Nginx, PM2, Load Balancer
+- **Backend**: Dockerfile
+- **APIs**: Jsearch via RapidAPI
+- **Deployment**: Web servers, Load Balancer
 
 ## API Information
-This application uses the Booking.com API available through RapidAPI. The API provides comprehensive hotel data, including:
-- Hotel searches by location
-- Detailed hotel information
-- Room availability and pricing
-- Photos and amenities
+This application uses  Jsearch via RapidAPI
+- job searches by location
+- job searches by skills
+- job salary
 
-**API Credit**: [Booking.com API on RapidAPI](https://rapidapi.com/booking.com/api/booking-com)
+**API Credit**: [Jsearch on RapidAPI](https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch)
 
 ## Local Setup Instructions
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- RapidAPI key for Booking.com API
+- Dockerhub
+- Jsearch via RapidAPI
 
 ### Installation Steps
 1. Clone the repository
    ```
-   git clone https://github.com/yourusername/hotel-search-app.git
-   cd hotel-search-app
+   git clone https://github.com/yourusername/my-app.git
+   cd my-app
    ```
 
 2. Install dependencies
@@ -64,163 +65,73 @@ This application has been deployed on two web servers (Web01 and Web02) with a l
 
 ### Web Server Setup (Web01 and Web02)
 
-1. Connect to each server via SSH
+1. Containerize the app
+   ```
+   Write a Dockerfile
+   ```
+2. Build image and container and then test
+   ```
+   docker build -t <dockerhub-username>/<app-name>:v1 .
+   docker run -p 8080:8080 <dockerhub-username>/<app-name>:v1
+   curl http://localhost:8080 # verify it works
+   ``` 
+3. Push to docker
+   ```
+   docker login
+   docker push <dockerhub-username>/<app-name>:v1
+   ```
+ 
+4. Connect to each server via SSH
    ```
    ssh username@web01_ip
    ssh username@web02_ip
    ```
 
-2. Install required software
+5. Pull and run your image on each:
    ```
-   sudo apt update
-   sudo apt install nodejs npm nginx
-   ```
-
-3. Install PM2 globally for process management
-   ```
-   sudo npm install -g pm2
-   ```
-
-4. Clone the repository
-   ```
-   git clone https://github.com/yourusername/hotel-search-app.git
-   cd hotel-search-app
-   ```
-
-5. Install dependencies and create environment file
-   ```
-   npm install
-   echo "RAPIDAPI_KEY=your_rapidapi_key_here" > .env
-   echo "PORT=4000" >> .env
-   ```
-
-6. Start the application with PM2
-   ```
-   pm2 start backend/server.js
-   pm2 save
-   pm2 startup
-   ```
-
-7. Configure Nginx as a reverse proxy
-   ```
-   sudo nano /etc/nginx/sites-available/hotel-app
-   ```
-
-8. Add the following configuration
-   ```nginx
-   server {
-       listen 80;
-       server_name your_server_domain_or_ip;
-
-       location / {
-           proxy_pass http://localhost:4000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection 'upgrade';
-           proxy_set_header Host $host;
-           proxy_cache_bypass $http_upgrade;
-       }
-   }
-   ```
-
-9. Enable the site and restart Nginx
-   ```
-   sudo ln -s /etc/nginx/sites-available/hotel-app /etc/nginx/sites-enabled/
-   sudo nginx -t
-   sudo systemctl restart nginx
+   docker pull <dockerhub-username>/<app-name>:v1
+   docker run -d --name app --restart unless-stopped \ -p 8080:8080 <dockerhub-username>/<app-name>:v1
    ```
 
 ### Load Balancer Configuration (Lb01)
 
-1. Connect to the load balancer server
+1. Update /etc/haproxy/haproxy.cfg (or your mounted file) so the backend points at the two app containers/hosts and ports:
    ```
-   ssh username@lb01_ip
-   ```
-
-2. Install Nginx
-   ```
-   sudo apt update
-   sudo apt install nginx
+   backend webapps
+balance roundrobin
+server web01 172.20.0.11:8080 check
+server web02 172.20.0.12:8080 check
    ```
 
-3. Configure Nginx as a load balancer
+2. Reload HAProxy:
    ```
-   sudo nano /etc/nginx/sites-available/load-balancer
-   ```
-
-4. Add the following configuration
-   ```nginx
-   upstream hotel_backend {
-       server web01_ip:80;
-       server web02_ip:80;
-   }
-
-   server {
-       listen 80;
-       server_name your_load_balancer_domain_or_ip;
-
-       location / {
-           proxy_pass http://hotel_backend;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_set_header X-Forwarded-Proto $scheme;
-       }
-   }
+   docker exec -it lb-01 sh -c 'haproxy -sf $(pidof haproxy) -f /etc/haproxy/haproxy.cfg'
    ```
 
-5. Enable the site and restart Nginx
+3. Test end-to-end
    ```
-   sudo ln -s /etc/nginx/sites-available/load-balancer /etc/nginx/sites-enabled/
-   sudo nginx -t
-   sudo systemctl restart nginx
-   ```
-
-6. Verify the load balancer is working by visiting `http://your_load_balancer_domain_or_ip` in your browser
-
-### Testing the Deployment
-After setting up both web servers and the load balancer, you can test the deployment by:
-
-1. Accessing the application through the load balancer URL
-2. Checking if your searches and hotel details load correctly
-3. Verifying that traffic is being distributed between Web01 and Web02 by checking the logs on both servers
-   ```
-   sudo tail -f /var/log/nginx/access.log
+   curl http://localhost
    ```
 
 ## Development Challenges and Solutions
 
 ### Challenge 1: API Rate Limiting
-**Issue**: The Booking.com API has strict rate limiting that restricted our development testing.
-**Solution**: Implemented caching for API responses to reduce the number of calls and added retry logic with exponential backoff.
+**Issue**: The Jsearch api has limited user requests/api calls.
+**Solution**: Upgrade to the unlimited api requests bouquet.
 
-### Challenge 2: Complex Data Structure
-**Issue**: The API returns deeply nested JSON structures that were difficult to parse efficiently.
-**Solution**: Created helper functions to normalize the data and extract only the necessary information for display.
-
-### Challenge 3: Cross-Origin Resource Sharing (CORS)
-**Issue**: Encountered CORS errors when making direct API calls from the frontend.
-**Solution**: Implemented a proxy server in our backend to make API requests on behalf of the frontend.
-
-### Challenge 4: Load Balancer Session Persistence
-**Issue**: User sessions were being disrupted when requests switched between servers.
-**Solution**: Configured the load balancer to use IP-based session persistence and implemented client-side storage for user preferences.
-
+### Challenge 2: Web servers poor connection to the docker daemon
+**Issue**: Web servers are not able to pull docker images 
+**Solution**: Try other techniques for deployment
 ## Future Enhancements
-- User authentication and profile management
-- Booking history and favorite hotels
-- Advanced filtering options (amenities, review scores, etc.)
-- Hotel reviews and ratings
-- Mobile application version
-- Payment integration for direct booking
+- Mobile  application version
+- User authentication
+- Job sorting
 
 ## Contributors
-- [Promesse Irakoze](https://github.com/Promesse44)
+- Hirwa Kelly (https://github.com/hirwakelly869)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
-- [Booking.com API](https://rapidapi.com/booking.com/api/booking-com) for providing hotel data
-- [Express.js](https://expressjs.com/) for the backend framework
-- All open-source libraries and tools used in this project
+- jsearch from rapidapi (https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch)
